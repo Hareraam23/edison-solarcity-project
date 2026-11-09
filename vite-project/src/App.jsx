@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import ContactForm from "./components/ContactForm";
 import LoginPage from "./components/LoginPage"; // NEW
+import DistrictMenu from "./components/DistrictMenu";
 
 const links = [
   "Solar Panels",
@@ -219,10 +220,10 @@ export default function App() {
             <circle cx="12" cy="12" r="10" />
             <path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17v.5" />
           </Icon>
-          <Icon>
-            <circle cx="12" cy="12" r="10" />
-            <path d="M2 12h20M12 2c3 3 3 17 0 20M12 2c-3 3-3 17 0 20" />
-          </Icon>
+
+          {/* NEW: globe icon now opens the 25 Sri Lanka districts */}
+          <DistrictMenu />
+
           {/* NEW: the user icon is now a button that opens the login popup */}
           <button
             type="button"

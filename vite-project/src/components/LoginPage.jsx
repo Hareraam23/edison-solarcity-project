@@ -4,7 +4,14 @@ import "./LoginPage.css";
 // Change this to your FastAPI address
 const API_URL = "http://localhost:8000";
 
-export default function LoginPage({ onClose, onLoginSuccess }) {
+export default function LoginPage({
+  onClose,
+  onLoginSuccess,
+  onCreateAccount,
+  onTroubleSigningIn,
+}) {
+  // step 1 = email, step 2 = password
+  const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -21,14 +28,24 @@ export default function LoginPage({ onClose, onLoginSuccess }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
-  const handleSubmit = async (e) => {
+  const isEmailValid = /^\S+@\S+\.\S+$/.test(email.trim());
+
+  // Step 1 -> Step 2
+  const handleNext = (e) => {
     e.preventDefault();
     setError("");
-
-    if (!/^\S+@\S+\.\S+$/.test(email)) {
+    if (!isEmailValid) {
       setError("Please enter a valid email address.");
       return;
     }
+    setStep(2);
+  };
+
+  // Step 2 -> call the API
+  const handleSignIn = async (e) => {
+    e.preventDefault();
+    setError("");
+
     if (password.length < 6) {
       setError("Password must be at least 6 characters.");
       return;
@@ -39,7 +56,7 @@ export default function LoginPage({ onClose, onLoginSuccess }) {
       const res = await fetch(`${API_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: email.trim(), password }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.detail || "Incorrect email or password.");
@@ -61,6 +78,13 @@ export default function LoginPage({ onClose, onLoginSuccess }) {
     }
   };
 
+  const goBack = () => {
+    setError("");
+    setPassword("");
+    setShowPassword(false);
+    setStep(1);
+  };
+
   return (
     <div className="login-overlay" onClick={onClose}>
       <div
@@ -70,46 +94,102 @@ export default function LoginPage({ onClose, onLoginSuccess }) {
         aria-labelledby="login-title"
         onClick={(e) => e.stopPropagation()}
       >
-        <button className="login-close" onClick={onClose} aria-label="Close">
+        <button className="login-close" onClick={onClose} aria-label="Close" type="button">
           ×
         </button>
 
-        <p className="login-brand">EDISON SOLUTION LAB</p>
-        <h2 id="login-title">Welcome back</h2>
-        <p className="login-sub">Sign in to manage your solar account.</p>
+        <h2 id="login-title" className="login-title">Sign In</h2>
 
-        <form onSubmit={handleSubmit} noValidate>
-          <label htmlFor="login-email">Email</label>
-          <input
-            id="login-email"
-            type="email"
-            placeholder="you@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            autoComplete="email"
-            autoFocus
-          />
+        {/* ---------- STEP 1: EMAIL ---------- */}
+        {step === 1 && (
+          <form onSubmit={handleNext} noValidate>
+            <div className="login-label-row">
+              <label htmlFor="login-email">Email</label>
+              <span className="login-info" tabIndex={0} aria-label="We use your email to find your account">
+                <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="1.6" />
+                  <circle cx="12" cy="7.9" r="1.1" fill="currentColor" />
+                  <path d="M12 11v5.6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                </svg>
+                <span className="login-tooltip" role="tooltip">
+                  We use your email to find your account.
+                </span>
+              </span>
+            </div>
 
-          <label htmlFor="login-password">Password</label>
-          <div className="login-password-row">
             <input
-              id="login-password"
-              type={showPassword ? "text" : "password"}
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
+              id="login-email"
+              className="login-input"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
+              autoFocus
             />
+
+            {error && <p className="login-error" role="alert">{error}</p>}
+
+            <button
+              type="submit"
+              className="login-primary"
+              disabled={email.trim().length === 0}
+            >
+              Next
+            </button>
+
             <button
               type="button"
-              className="login-toggle"
-              onClick={() => setShowPassword(!showPassword)}
+              className="login-trouble"
+              onClick={() => onTroubleSigningIn && onTroubleSigningIn()}
             >
-              {showPassword ? "Hide" : "Show"}
+              Trouble Signing In?
             </button>
-          </div>
 
-          <div className="login-options">
+            <div className="login-divider" role="separator">
+              <span>Or</span>
+            </div>
+
+            <button
+              type="button"
+              className="login-secondary"
+              onClick={() => onCreateAccount && onCreateAccount()}
+            >
+              Create Account
+            </button>
+          </form>
+        )}
+
+        {/* ---------- STEP 2: PASSWORD ---------- */}
+        {step === 2 && (
+          <form onSubmit={handleSignIn} noValidate>
+            <p className="login-email-chip">
+              <span>{email}</span>
+              <button type="button" onClick={goBack}>Change</button>
+            </p>
+
+            <div className="login-label-row">
+              <label htmlFor="login-password">Password</label>
+            </div>
+
+            <div className="login-password-row">
+              <input
+                id="login-password"
+                className="login-input"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                autoFocus
+              />
+              <button
+                type="button"
+                className="login-toggle"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
+
             <label className="login-remember">
               <input
                 type="checkbox"
@@ -118,24 +198,26 @@ export default function LoginPage({ onClose, onLoginSuccess }) {
               />
               Remember me
             </label>
-            <a href="#forgot" onClick={(e) => e.preventDefault()}>
-              Forgot password?
-            </a>
-          </div>
 
-          {error && <p className="login-error" role="alert">{error}</p>}
+            {error && <p className="login-error" role="alert">{error}</p>}
 
-          <button type="submit" className="login-submit" disabled={loading}>
-            {loading ? "Signing in..." : "Sign In"}
-          </button>
-        </form>
+            <button
+              type="submit"
+              className="login-primary"
+              disabled={loading || password.length === 0}
+            >
+              {loading ? "Signing in..." : "Sign In"}
+            </button>
 
-        <p className="login-footer">
-          Don&apos;t have an account?{" "}
-          <a href="#signup" onClick={(e) => e.preventDefault()}>
-            Create one
-          </a>
-        </p>
+            <button
+              type="button"
+              className="login-trouble"
+              onClick={() => onTroubleSigningIn && onTroubleSigningIn()}
+            >
+              Trouble Signing In?
+            </button>
+          </form>
+        )}
       </div>
     </div>
   );
