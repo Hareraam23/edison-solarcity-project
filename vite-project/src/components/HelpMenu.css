@@ -1,0 +1,137 @@
+.help-page {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  overflow-y: auto;
+  background: #fff;
+  color: #171a20;
+  padding: 24px;
+}
+
+.help-close {
+  position: absolute;
+  top: 18px;
+  right: 28px;
+  background: none;
+  border: none;
+  font-size: 40px;
+  line-height: 1;
+  color: #393c41;
+  cursor: pointer;
+}
+.help-close:hover { color: #000; }
+
+.help-inner {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 70px 0 60px;
+  text-align: center;
+}
+
+.help-inner h1 {
+  font-size: clamp(38px, 6vw, 64px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #171a20;
+}
+
+.help-search {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 48px;
+  padding: 0 18px;
+  height: 58px;
+  background: #f4f4f4;
+  border-radius: 6px;
+  cursor: text;
+}
+
+.help-search svg {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: #393c41;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+
+.help-search input {
+  flex: 1;
+  height: 100%;
+  background: none;
+  border: none;
+  outline: none;
+  font: inherit;
+  font-size: 17px;
+  font-weight: 500;
+  color: #171a20;
+}
+.help-search input::placeholder { color: #8c8e92; }
+.help-search:focus-within { box-shadow: 0 0 0 2px #3e6ae1; }
+
+.help-results {
+  margin-top: 28px;
+  text-align: left;
+  display: grid;
+  gap: 14px;
+}
+
+.help-results article {
+  padding: 18px 22px;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+.help-results h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #171a20;
+}
+
+.help-results p {
+  margin-top: 6px;
+  font-size: 16px;
+  line-height: 1.55;
+  color: #5c5e62;
+}
+
+.help-results .help-empty {
+  text-align: center;
+  margin: 0;
+}
+
+.help-personal {
+  margin-top: 90px;
+}
+
+.help-personal h2 {
+  font-size: clamp(28px, 3.4vw, 40px);
+  font-weight: 600;
+  color: #171a20;
+}
+
+.help-personal p {
+  max-width: 680px;
+  margin: 14px auto 0;
+  font-size: 18px;
+  line-height: 1.55;
+  color: #393c41;
+}
+
+.help-contact {
+  margin-top: 44px;
+  min-width: 220px;
+  padding: 17px 28px;
+  background: #f4f4f4;
+  border: none;
+  border-radius: 6px;
+  font: inherit;
+  font-size: 17px;
+  font-weight: 600;
+  color: #393c41;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.help-contact:hover { background: #e7e7e7; }
